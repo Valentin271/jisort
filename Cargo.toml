@@ -1,0 +1,21 @@
+[package]
+name = "jisort"
+version = "0.0.0"
+authors = ["Valentin271"]
+edition = "2021"
+description = "A JavaScript / Typescript import sorter"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+argh = { version = "0.1.10", optional = true }
+ignore = "0.4.20"
+nom = "7.1.3"
+
+[features]
+default = ["argh"]
+
+[profile.release]
+lto = true
+opt-level = 3
+strip = true
