@@ -8,7 +8,7 @@ use super::ReportTrait;
 ///
 /// Files can be:
 ///
-/// - left unchanged when they are correctly formated.
+/// - left unchanged when they are correctly formatted.
 /// - sorted when when they are not dangerous or when the `force` flag is enabled
 /// - marked as dangerous when they are and the `force` flag is not enabled
 #[derive(Debug, Default)]

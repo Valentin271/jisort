@@ -83,7 +83,7 @@ pub trait ReportTrait {
 
     /// Tells whether the report is ok (no errors happened).
     ///
-    /// See [ReportTrait::err] for mor details. This is the opposite.
+    /// See [ReportTrait::err] for more details. This is the opposite.
     fn ok(&self) -> bool {
         !self.err()
     }

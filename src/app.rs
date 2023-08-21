@@ -69,7 +69,7 @@ impl App {
     ///
     /// # Usage
     ///
-    /// This is particularly useful in CI piplines.
+    /// This is particularly useful in CI pipelines.
     pub fn check(&self) -> Result<CheckReport, Error> {
         let mut report = CheckReport::default();
 
@@ -93,7 +93,7 @@ impl App {
     ///
     /// # Command line
     ///
-    /// Dangerous files can stil be sorted with the `--force` flag.
+    /// Dangerous files can still be sorted with the `--force` flag.
     pub fn fix(&self) -> Result<FixReport, Error> {
         let mut report = FixReport::default();
 

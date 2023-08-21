@@ -20,7 +20,7 @@ impl FileData {
     }
     /// Tells whether this file is dangerous to format.
     ///
-    /// Formating is dangerous when there are other statements in-between imports,
+    /// Formatting is dangerous when there are other statements in-between imports,
     /// like comments.
     pub fn is_dangerous(&self) -> bool {
         let imports_len = self.imports.len();
