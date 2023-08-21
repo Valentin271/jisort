@@ -5,7 +5,7 @@
 mod check_report;
 mod fix_report;
 
-use std::fmt::Display;
+use std::fmt::{Debug, Display};
 
 pub use check_report::CheckReport;
 pub use fix_report::FixReport;
@@ -47,11 +47,20 @@ impl ReportTrait for Report {
     }
 }
 
+impl Debug for Report {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Report::Fix(report) => Debug::fmt(report, f),
+            Report::Check(report) => Debug::fmt(report, f),
+        }
+    }
+}
+
 impl Display for Report {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Report::Fix(report) => report.fmt(f),
-            Report::Check(report) => report.fmt(f),
+            Report::Fix(report) => Display::fmt(report, f),
+            Report::Check(report) => Display::fmt(report, f),
         }
     }
 }
