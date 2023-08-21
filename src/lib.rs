@@ -30,14 +30,6 @@ use crate::app::report::{Report, ReportTrait};
 ///
 /// This also checks for the [version](Config::version) & [list](Config::list) flag, unlike
 /// [App::run](app::App::run) which does not.
-///
-/// # Example
-///
-/// ```
-/// use jisort::prelude::*;
-/// let config = Config::default();
-/// let res = run(config);
-/// ```
 pub fn run(config: Config) -> Result<(), Error> {
     if config.version {
         println!("{}", app::VERSION);

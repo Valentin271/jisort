@@ -17,19 +17,6 @@ use crate::file::File;
 /// It implements [ReportTrait] to easily access common methods.
 /// It also implements the [Display] trait so you can print a report, the implementation delegates
 /// to the print to the wrapped reports.
-///
-/// # Example
-/// ```
-/// # use jisort::prelude::*;
-/// # use jisort::app::report::ReportTrait;
-/// let report = App::new(Config::default()).run().unwrap();
-///
-/// if report.err() {
-///     println!("{} errors!", report.len());
-/// }
-///
-/// println!("{}", report);
-/// ```
 pub enum Report {
     /// A report over a *fix* run.
     Fix(FixReport),
