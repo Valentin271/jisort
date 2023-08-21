@@ -1,0 +1,165 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'New version number'
+        required: true
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install stable toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+          components: rustfmt, clippy
+
+      - name: Run cargo fmt
+        uses: actions-rs/cargo@v1
+        with:
+          command: fmt
+          args: --all -- --check
+
+      - name: Run cargo clippy
+        uses: actions-rs/cargo@v1
+        with:
+          command: clippy
+          args: -- -D warnings
+
+
+  test:
+    name: Testing
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install stable toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+
+      - name: Run cargo test
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+
+
+  doc:
+    name: Documentation build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install stable toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+          components: rust-docs
+
+      - name: Run cargo doc
+        uses: actions-rs/cargo@v1
+        with:
+          command: doc
+
+
+  tag:
+    name: Create release tag
+    runs-on: ubuntu-latest
+    needs: [ lint, test, doc ]
+    steps:
+      - run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+      - run: |
+          sed -Ei -e 's/^version = "[^"]+"/version = "${{ inputs.version }}"/' Cargo.toml 
+          git commit -am "${{ inputs.version }}"
+          git tag ${{ inputs.version }}
+          git push --follow-tags
+
+
+  build:
+    name: ${{ matrix.os }} release build
+    needs: tag
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-musl
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+          - os: macos-latest
+            target: x86_64-apple-darwin
+          - os: macos-latest
+            target: aarch64-apple-darwin
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install stable toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+          target: ${{ matrix.target }}
+
+      - name: Run cargo build
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --release --target ${{ matrix.target }}
+
+      - name: Package
+        shell: bash
+        run: |
+            output="jisort-${{ inputs.version }}-${{ matrix.target }}"
+            if [ "${{ matrix.os }}" = "ubuntu-latest" ]; then
+              tar cvzf "${output}.tgz" ./target/release/jisort
+            elif [ "${{ matrix.os }}" = "macos-latest" ]; then
+              gtar cvzf "${output}.tgz" ./target/release/jisort
+            else
+              7z a "${output}.zip" ./target/release/jisort
+            fi
+
+      - name: Upload artifacts
+        uses: actions/upload-artifacts@v3
+        with:
+          name: jisort-${{ inputs.version }}-${{ matrix.target }}
+          path: jisort-${{ inputs.version }}*
+
+  publish:
+    name: Publish github release
+    runs-on: ubuntu-latest
+    needs: build
+    env:
+      GH_REPO: ${{ github.repository }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    permissions:
+      contents: write
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+
+      - name: Publish release
+        run: |
+          gh release create ${{ inputs.version }}\
+            --title "${{ inputs.version }}" \
+            jisort-${{ inputs.version }}-*/*
