@@ -64,6 +64,7 @@ impl File {
 
         // If there are comments after imports, add them
         if let Some(statements) = data.statements.get(&imports.len()) {
+            text_imports.push('\n');
             let comments = statements
                 .iter()
                 .fold(String::new(), |acc, s| acc + &s.code() + "\n");
