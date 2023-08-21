@@ -42,20 +42,40 @@ impl File {
             .first()
             .map_or(ImportType::default(), |imp| imp.ty());
 
-        for import in &imports {
+        for (i, import) in imports.iter().enumerate() {
+            // Add empty line between different import types
             if last_import_type != import.ty() {
                 last_import_type = import.ty();
                 text_imports.push('\n');
             }
+
+            // Add comments if there are
+            if let Some(statements) = data.statements.get(&i) {
+                let comments = statements
+                    .iter()
+                    .fold(String::new(), |acc, s| acc + &s.code() + "\n");
+                text_imports.push_str(&comments);
+            }
+
+            // Add import
             text_imports.push_str(&import.code());
             text_imports.push('\n');
         }
 
-        if !imports.is_empty() {
+        // If there are comments after imports, add them
+        if let Some(statements) = data.statements.get(&imports.len()) {
+            let comments = statements
+                .iter()
+                .fold(String::new(), |acc, s| acc + &s.code() + "\n");
+            text_imports.push_str(&comments);
+        }
+
+        // Don't add empty lines if the file does not contain imports
+        if !imports.is_empty() && !data.rest.is_empty() {
             text_imports.push('\n');
         }
 
-        let content = text_imports + &data.rest.clone();
+        let content = text_imports + &data.rest;
 
         fs::write(self.path.clone(), content)?;
 
