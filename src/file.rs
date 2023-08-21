@@ -68,10 +68,9 @@ impl File {
                 .iter()
                 .fold(String::new(), |acc, s| acc + &s.code() + "\n");
             text_imports.push_str(&comments);
-        }
-
         // Don't add empty lines if the file does not contain imports
-        if !imports.is_empty() && !data.rest.is_empty() {
+        // This is a `else if` because we don't want empty lines after comments
+        } else if !imports.is_empty() && !data.rest.is_empty() {
             text_imports.push('\n');
         }
 
