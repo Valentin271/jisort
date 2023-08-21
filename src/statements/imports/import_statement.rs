@@ -13,7 +13,7 @@ pub struct ImportStatement {
 
 impl ImportStatement {
     pub fn ty(&self) -> ImportType {
-        ImportType::from(self)
+        ImportType::from(self.module.as_str())
     }
 }
 
