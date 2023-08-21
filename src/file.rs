@@ -64,11 +64,15 @@ impl File {
 
         // If there are comments after imports, add them
         if let Some(statements) = data.statements.get(&imports.len()) {
-            text_imports.push('\n');
+            // Add empty line if there are imports
+            if !data.imports.is_empty() {
+                text_imports.push('\n');
+            }
             let comments = statements
                 .iter()
                 .fold(String::new(), |acc, s| acc + &s.code() + "\n");
             text_imports.push_str(&comments);
+
         // Don't add empty lines if the file does not contain imports
         // This is a `else if` because we don't want empty lines after comments
         } else if !imports.is_empty() && !data.rest.is_empty() {
