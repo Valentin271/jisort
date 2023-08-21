@@ -23,6 +23,89 @@ impl FileData {
     /// Formating is dangerous when there are other statements in-between imports,
     /// like comments.
     pub fn is_dangerous(&self) -> bool {
-        !self.statements.is_empty()
+        let imports_len = self.imports.len();
+        self.statements.keys().any(|k| k > &0 && k < &imports_len)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::statements::{Comment, CommentType};
+
+    fn import(module: &str) -> ImportStatement {
+        ImportStatement {
+            identifiers: None,
+            module: module.to_owned(),
+            comment: None,
+        }
+    }
+
+    fn comment(data: &str) -> Box<Comment> {
+        Box::new(Comment {
+            data: data.to_owned(),
+            ty: CommentType::Single,
+        })
+    }
+
+    #[test]
+    fn empty_not_dangerous() {
+        let data = FileData::new();
+        assert!(!data.is_dangerous());
+    }
+
+    #[test]
+    fn import_not_dangerous() {
+        let mut data = FileData::new();
+        data.imports.push(import("foo"));
+
+        assert!(!data.is_dangerous());
+    }
+
+    #[test]
+    fn statements_between_imports_dangerous() {
+        let mut data = FileData::new();
+        data.statements.insert(1, vec![comment("foo")]);
+        data.imports.push(import("foo"));
+        data.imports.push(import("foo"));
+
+        assert!(data.is_dangerous());
+    }
+
+    #[test]
+    fn statements_before_imports_not_danerous() {
+        let mut data = FileData::new();
+        data.statements.insert(0, vec![comment("foo")]);
+        data.imports.push(import("foo"));
+
+        assert!(!data.is_dangerous());
+    }
+
+    #[test]
+    fn statements_after_imports_not_dangerous() {
+        let mut data = FileData::new();
+        data.statements.insert(1, vec![comment("foo")]);
+        data.imports.push(import("foo"));
+
+        assert!(!data.is_dangerous());
+    }
+
+    #[test]
+    fn statements_around_imports_not_dangerous() {
+        let mut data = FileData::new();
+        data.statements.insert(0, vec![comment("foo")]);
+        data.statements.insert(1, vec![comment("bar")]);
+        data.imports.push(import("foo"));
+
+        assert!(!data.is_dangerous());
+    }
+
+    #[test]
+    fn only_statements_not_dangerous() {
+        let mut data = FileData::new();
+        data.statements.insert(0, vec![comment("foo")]);
+        data.statements.insert(1, vec![comment("bar")]);
+
+        assert!(!data.is_dangerous());
     }
 }
