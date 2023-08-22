@@ -88,6 +88,7 @@ jobs:
           git config user.email github-actions@github.com
       - run: |
           sed -Ei -e 's/^version = "[^"]+"/version = "${{ inputs.version }}"/' Cargo.toml 
+          cargo update -p jisort # update version in lockfile
           git commit -am "${{ inputs.version }}"
           git tag "${{ inputs.version }}"
           git push
@@ -95,7 +96,7 @@ jobs:
 
 
   build:
-    name: ${{ matrix.os }} release build
+    name: ${{ matrix.target }} release build
     needs: tag
     strategy:
       fail-fast: false
@@ -134,11 +135,14 @@ jobs:
         run: |
             output="jisort-${{ inputs.version }}-${{ matrix.target }}"
             if [ "${{ matrix.os }}" = "ubuntu-latest" ]; then
-              tar cvzf "${output}.tgz" ./target/release/jisort
+              cp ./target/${{ matrix.target }}/release/jisort .
+              tar cvzf "${output}.tgz" jisort
             elif [ "${{ matrix.os }}" = "macos-latest" ]; then
-              gtar cvzf "${output}.tgz" ./target/release/jisort
+              cp ./target/${{ matrix.target }}/release/jisort .
+              gtar cvzf "${output}.tgz" jisort
             else
-              7z a "${output}.zip" ./target/release/jisort
+              cp ./target/${{ matrix.target }}/release/jisort.exe .
+              7z a "${output}.zip" jisort.exe
             fi
 
       - name: Upload artifacts

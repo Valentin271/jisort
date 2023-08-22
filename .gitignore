@@ -1,1 +1,7 @@
+# Build dir
 /target
+
+# Archives
+*.tgz
+*.tar.gz
+*.zip
