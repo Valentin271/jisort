@@ -115,6 +115,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.version }}
 
       - name: Install stable toolchain
         uses: actions-rs/toolchain@v1
