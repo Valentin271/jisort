@@ -44,19 +44,6 @@ impl Config {
     pub fn from_cli() -> Self {
         argh::from_env()
     }
-
-    /// Load config from environment variables
-    pub fn from_env() -> Self {
-        unimplemented!()
-    }
-
-    /// Load config from a config file
-    pub fn from_file<P>(file: P) -> Self
-    where
-        P: Into<PathBuf>,
-    {
-        unimplemented!("args: {:?}", file.into())
-    }
 }
 
 impl Default for Config {
