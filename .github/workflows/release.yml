@@ -141,7 +141,7 @@ jobs:
             fi
 
       - name: Upload artifacts
-        uses: actions/upload-artifacts@v3
+        uses: actions/upload-artifact@v3
         with:
           name: jisort-${{ inputs.version }}-${{ matrix.target }}
           path: jisort-${{ inputs.version }}*
