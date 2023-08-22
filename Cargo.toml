@@ -1,6 +1,6 @@
 [package]
 name = "jisort"
-version = "0.0.3"
+version = "0.0.4"
 authors = ["Valentin271"]
 edition = "2021"
 description = "A JavaScript / Typescript import sorter"
