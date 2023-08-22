@@ -37,11 +37,10 @@ See `jisort --help` for all options and documentation.
 
 # Installation
 
-## From source
-
-```sh
-cargo install --git https://github.com/Valentin271/jisort
-```
+| Method | Command |
+|---|---|
+| cargo | `cargo install jisort`|
+| source | `cargo install --git https://github.com/Valentin271/jisort`|
 
 ## Pre-compiled binaries
 
