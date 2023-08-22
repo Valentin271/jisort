@@ -89,8 +89,9 @@ jobs:
       - run: |
           sed -Ei -e 's/^version = "[^"]+"/version = "${{ inputs.version }}"/' Cargo.toml 
           git commit -am "${{ inputs.version }}"
-          git tag ${{ inputs.version }}
-          git push --follow-tags
+          git tag "${{ inputs.version }}"
+          git push
+          git push --tags
 
 
   build:
