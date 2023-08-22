@@ -33,7 +33,7 @@ impl From<&str> for ImportType {
             Self::Alias
         } else if value.ends_with(".css") {
             Self::Style
-        } else if value.starts_with("@") {
+        } else if value.starts_with('@') {
             Self::ScopedModule
         } else if value.starts_with('.') {
             Self::Local
