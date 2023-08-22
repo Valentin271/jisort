@@ -52,10 +52,16 @@ impl App {
     /// Does not take into account [version](Config::version) & [list](Config::list) flags.
     /// For this, see [run](crate::run).
     pub fn run(&mut self) -> Result<Report, Error> {
-        let report = if self.config.check {
-            Report::Check(self.check()?)
+        let files: Box<dyn Iterator<Item = File>> = if self.config.is_path_file() {
+            Box::new(vec![File::new(&self.config.path)].into_iter())
         } else {
-            Report::Fix(self.fix()?)
+            Box::new(self.files()?)
+        };
+
+        let report = if self.config.check {
+            Report::Check(self.check(files)?)
+        } else {
+            Report::Fix(self.fix(files)?)
         };
 
         Ok(report)
@@ -70,10 +76,13 @@ impl App {
     /// # Usage
     ///
     /// This is particularly useful in CI pipelines.
-    pub fn check(&self) -> Result<CheckReport, Error> {
+    pub fn check<I>(&self, files: I) -> Result<CheckReport, Error>
+    where
+        I: Iterator<Item = File>,
+    {
         let mut report = CheckReport::default();
 
-        for file in self.files()? {
+        for file in files {
             let data = file.parse()?;
 
             if file.check(&data) {
@@ -94,10 +103,13 @@ impl App {
     /// # Command line
     ///
     /// Dangerous files can still be sorted with the `--force` flag.
-    pub fn fix(&self) -> Result<FixReport, Error> {
+    pub fn fix<I>(&self, files: I) -> Result<FixReport, Error>
+    where
+        I: Iterator<Item = File>,
+    {
         let mut report = FixReport::default();
 
-        for file in self.files()? {
+        for file in files {
             let data = file.parse()?;
 
             if !data.is_dangerous() || self.config.force {

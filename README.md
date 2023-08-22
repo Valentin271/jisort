@@ -7,7 +7,10 @@ Originally built specifically for [JVS](https://www.groupe-jvs.fr/).
 
 ## Basic usage
 
-To use, just run `jisort` at the root of your project.
+Just running `jisort` will search and sort files recursively from the current folder.  
+You can alter that behavior by specifying the folder you want to sort with `jisort <project-folder>`.
+
+You can also run it against a single file with `jisort <file>`.
 
 ## Options
 

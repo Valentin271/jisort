@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::path::Path;
 
 #[cfg(feature = "argh")]
 use argh::FromArgs;
@@ -43,6 +43,11 @@ impl Config {
     #[cfg(feature = "argh")]
     pub fn from_cli() -> Self {
         argh::from_env()
+    }
+
+    /// Tells whether the argument given as `path` is a file or a directory.
+    pub fn is_path_file(&self) -> bool {
+        Path::new(&self.path).is_file()
     }
 }
 
