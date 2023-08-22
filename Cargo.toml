@@ -4,6 +4,13 @@ version = "0.0.0"
 authors = ["Valentin271"]
 edition = "2021"
 description = "A JavaScript / Typescript import sorter"
+repository = "https://github.com/Valentin271/jisort"
+license = "MIT"
+keywords = ["javascript", "import", "sort", "lint"]
+categories = ["command-line-utilities", "development-tools"]
+exclude = [
+    "/.github"
+]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
